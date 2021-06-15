@@ -54,8 +54,6 @@
                 $sql = "select * from users order by user_lastname asc";
                 $result = $conn->query($sql);
 
-                $sql2 = "select * from accounts order by user_lastname asc";
-                $result2 = $conn->query($sql2);
 ?>
                 <section class="recent">
                   <div class="activity-card">
@@ -79,14 +77,12 @@
 <?php
                         while ($row = $result->fetch_assoc())
                         {
-                            while ($row2 = $result2->fetch_assoc())
-                            {
-                                if ($row2['user_accounttype'] == 'block' )
+                                if ($row['user_accountstate'] == 'block' )
                                 {
                                     $acc_condition1 = 'checked';
                                     $acc_condition2 = '';
                                 }
-                                else if ($row2['user_accounttype'] == 'active' )
+                                else if ($row['user_accountstate'] == 'active' )
                                 {
                                     $acc_condition1 = '';
                                     $acc_condition2 = 'checked';
@@ -103,16 +99,16 @@
                                 <td><?php echo $row['user_aadharbackname']?></td>
                                 <td>
 <?php
-                                    if ($row2['user_accounttype'] == 'active' )
+                                    if ($row['user_accountstate'] == 'active' )
                                     {
 ?>
-                                        <span class="badge success"><?php echo $row2['user_accounttype']?></span>
+                                        <span class="badge success"><?php echo $row['user_accountstate']?></span>
 <?php
                                     }
-                                    else if($row2['user_accounttype'] == 'block' ) 
+                                    else if($row['user_accountstate'] == 'block' ) 
                                     {
 ?> 
-                                        <span class="badge warning"><?php echo $row2['user_accounttype']?></span>
+                                        <span class="badge warning"><?php echo $row['user_accountstate']?></span>
 <?php
                                     }
 ?>
@@ -135,7 +131,7 @@
                                 </td>
                             </tr>
 <?php         
-                        }    
+                       
                     }
 ?>
                         </tbody>
@@ -154,13 +150,21 @@
                     $account_ifsc = $_POST['account_ifsc'];
                     $account_condition = $_POST['account_condition'];
 
-                    $sql_account_statment = "update accounts set user_accounttype = '$account_condition'
+                    $sql_account_condition = "update users set user_accountstate = '$account_condition' 
+                                            where user_id = '$id_account_condition'
+                                            and user_firstname = '$firstname_account_condition'
+                                            and user_lastname = '$lastname_account_condition'
+                                            and user_accountno = '$account_no' and user_ifsc = '$account_ifsc' ";
+                     $result_account_condition = $conn->query($sql_account_condition);
+                    
+
+                    if ($result_account_condition == true)
+                    {
+
+                        $sql_account_statment = "update accounts set user_accounttype = '$account_condition'
                     where user_accountno = '$account_no' and user_ifsc = '$account_ifsc'
                     and user_lastname = '$lastname_account_condition' and user_firstname = '$firstname_account_condition'";
                     $result_account_statment = $conn->query($sql_account_statment);
-
-                    if ($result_account_statment == true)
-                    {
                         echo "<script type='text/javascript'>alert('Account $firstname_account_condition $lastname_account_condition is $account_condition');
                               </script>";
                         echo ("<script>location.href='user.php'</script>");
